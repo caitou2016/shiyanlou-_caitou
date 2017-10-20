@@ -16,7 +16,7 @@ class Config(object):
         except:
             print("FileError:not exist")
             sys.exit(0)
-
+   
     def get_config(self):
         with open(self.configfile,'r') as file:
             for line in file:
@@ -25,17 +25,16 @@ class Config(object):
                    self._config[key] = float(item)
                except ValueError:
                    print("ValueError")
-       # return self._config[connect]
+        return self._config
 
-c =Config('/home/shiyanlou/test.cfg')
-print(c.get_config('JiShuH'))
-sys.exit(0)
 
-class Uerdata(Config):
+class Userdata(Config):
 
-    def __init__(self,userdatafile):
+    def __init__(self,userdatafile,configfile):
         self.userdatafile = userdatafile
         self.data = {}
+        Config.__init__(self,configfile)
+
         try:
             if os.path.isfile(self.userdatafile):
                 pass
@@ -44,9 +43,9 @@ class Uerdata(Config):
         except:
             print("FileError:not exist")
             sys.exit(0)
-
+    
     def get_data(self):
-        with open(userdatafile,'r') as file:
+        with open(self.userdatafile,'r') as file:
             for line in file:
                 key,item = line.split(',')
                 try:
@@ -57,50 +56,66 @@ class Uerdata(Config):
         return self.data
    
     def calculator(self):
+       # c = Config(self.configfile)
+        self.get_config()
+        self.get_data()
+        result = []
+        print('hello') #ceshi
+        print('config data:',self.data.items())
+        print('data :',self._config.items())  #ceshi
+        insurance_per = 0
         for x,y in self._config.items():
             if not x == 'JiShuL' and not x == 'JiShuH':
-                insurance +=y
-        print(insurance)
+                print(x) #ceshi
+                insurance_per +=y
+        print('insurance_pe is :',insurance_per)  #ceshi
 
-        try:
-            for user_id,salary in self.data.items():
-                if salary < self._config['JiShuL']:
-                    insurance = self._config['JiShuL'] * 
-            salary = int(salary2)
-            
-            insurance = salary * 0.165
-            ratal = salary - insurance - 3500
+#        try:
+        for employee_id,salary in sorted(self.data.items()):
+            if salary < self._config['JiShuL'] :
+                insurance = self._config['JiShuL'] * insurance_per
+            elif salary > self._config['JiShuH']:
+                insurance = self._config['JiShuH'] * insurance_per
+            else:
+                insurance = salary * insurance_per
+                ratal = salary - insurance - 3500
 
-            if ratal <= 1500:
-                tax_rate = 0.03
-                quick_deduction = 0
-            elif ratal <= 4500:
-                tax_rate = 0.1
-                quick_deduction = 105
-            elif ratal <= 9000:
-                tax_rate = 0.2
-                quick_deduction = 555
-            elif ratal <= 35000:
-                tax_rate = 0.25
-                quick_deduction = 1005
-            elif ratal <= 55000:
-                tax_rate = 0.3
-                quick_deduction = 5505
-            elif ratal <= 80000:
-                tax_rate = 0.35
-                quick_deduction = 5505
-            else:
-                tax_rate = 0.45
-                quick_deduction = 13505
-            
-            if ratal < 0:
-                income = salary - insurance 
-            else:
-                tax = ratal * tax_rate - quick_deduction
-                income = salary - insurance - tax
-            print("{}:{:0.2f}".format(employ_id,income))
-    except:
-        print("Parameter Error")
+                if ratal <= 1500:
+                    tax_rate = 0.03
+                    quick_deduction = 0
+                elif ratal <= 4500:
+                    tax_rate = 0.1
+                    quick_deduction = 105
+                elif ratal <= 9000:
+                    tax_rate = 0.2
+                    quick_deduction = 555
+                elif ratal <= 35000:
+                    tax_rate = 0.25
+                    quick_deduction = 1005
+                elif ratal <= 55000:
+                    tax_rate = 0.3
+                    quick_deduction = 5505
+                elif ratal <= 80000:
+                    tax_rate = 0.35
+                    quick_deduction = 5505
+                else:
+                    tax_rate = 0.45
+                    quick_deduction = 13505
+
+                if ratal < 0:
+                    income = salary - insurance 
+                else:
+                    tax = ratal * tax_rate - quick_deduction
+                    income = salary - insurance - tax
+               
+                result.append( "{},{},{},{},{:0.2f}".format(employee_id,salary,insurance,tax,income))
+                print(result)
+ #       except:
+  #          print("Parameter Error")
 
 if __name__ == '__main__':
-    tax_calculate()
+   # c = Config('/home/shiyanlou/test.cfg')
+    u = Userdata('/home/shiyanlou/user.csv','/home/shiyanlou/test.cfg')
+   # c.get_config()
+   # u.get_userdata()
+    u.calculator()
