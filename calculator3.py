@@ -17,7 +17,7 @@ class Config(object):
             print("FileError:not exist")
             sys.exit(0)
 
-    def get_config(self,connect):
+    def get_config(self):
         with open(self.configfile,'r') as file:
             for line in file:
                key,item = line.strip().split(' = ')
@@ -25,13 +25,13 @@ class Config(object):
                    self._config[key] = float(item)
                except ValueError:
                    print("ValueError")
-        return self._config[connect]
+       # return self._config[connect]
 
 c =Config('/home/shiyanlou/test.cfg')
 print(c.get_config('JiShuH'))
 sys.exit(0)
 
-class Uerdata(object):
+class Uerdata(Config):
 
     def __init__(self,userdatafile):
         self.userdatafile = userdatafile
@@ -54,15 +54,18 @@ class Uerdata(object):
                 except ValueError:
                     print("ValueError")
                     sys.exit(0)
+        return self.data
    
     def calculator(self):
+        for x,y in self._config.items():
+            if not x == 'JiShuL' and not x == 'JiShuH':
+                insurance +=y
+        print(insurance)
 
-
-def tax_calculate():
-    try:
-        input_data = sys.argv[1:]
-        for x in input_data:
-            employ_id,salary2 = x.split(':')
+        try:
+            for user_id,salary in self.data.items():
+                if salary < self._config['JiShuL']:
+                    insurance = self._config['JiShuL'] * 
             salary = int(salary2)
             
             insurance = salary * 0.165
