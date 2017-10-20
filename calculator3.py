@@ -8,7 +8,6 @@ class Config(object):
         self.configfile = configfile
         self._config = {}
 
-    def get_config(self,connect):
         try:
             if os.path.isfile(self.configfile):
                 pass
@@ -16,18 +15,49 @@ class Config(object):
                 raise FileError
         except:
             print("FileError:not exist")
-        
-        with open(configfile,'r') as file:
+            sys.exit(0)
+
+    def get_config(self,connect):
+        with open(self.configfile,'r') as file:
             for line in file:
                key,item = line.strip().split(' = ')
                try:
-                   self._config[key] = int(item)
+                   self._config[key] = float(item)
                except ValueError:
                    print("ValueError")
+        return self._config[connect]
 
-
-    
+c =Config('/home/shiyanlou/test.cfg')
+print(c.get_config('JiShuH'))
 sys.exit(0)
+
+class Uerdata(object):
+
+    def __init__(self,userdatafile):
+        self.userdatafile = userdatafile
+        self.data = {}
+        try:
+            if os.path.isfile(self.userdatafile):
+                pass
+            else:
+                raise FileError
+        except:
+            print("FileError:not exist")
+            sys.exit(0)
+
+    def get_data(self):
+        with open(userdatafile,'r') as file:
+            for line in file:
+                key,item = line.split(',')
+                try:
+                    self.data[key] = int(item)
+                except ValueError:
+                    print("ValueError")
+                    sys.exit(0)
+   
+    def calculator(self):
+
+
 def tax_calculate():
     try:
         input_data = sys.argv[1:]
