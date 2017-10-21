@@ -8,23 +8,24 @@ class Config(object):
         self.configfile = configfile
         self._config = {}
 
+   
+    def get_config(self):
         try:
             if os.path.isfile(self.configfile):
                 pass
-            else:
-                raise FileError
+#            else:
+ #               raise FileError
         except:
             print("FileError:not exist")
             sys.exit(0)
-   
-    def get_config(self):
+       
         with open(self.configfile,'r') as file:
             for line in file:
-               key,item = line.strip().split(' = ')
-               try:
-                   self._config[key] = float(item)
-               except ValueError:
-                   print("ValueError")
+                key,item = line.strip().split(' = ')
+                try:
+                    self._config[key] = float(item)
+                except ValueError:
+                     print("ValueError")
         return self._config
 
 
@@ -36,16 +37,17 @@ class Userdata(Config):
         self.result = []
         Config.__init__(self,configfile)
 
+           
+    def get_data(self):
         try:
             if os.path.isfile(self.userdatafile):
                 pass
-            else:
-                raise FileError
+#            else:
+ #               raise FileError
         except:
             print("FileError:not exist")
             sys.exit(0)
-    
-    def get_data(self):
+
         with open(self.userdatafile,'r') as file:
             for line in file:
                 key,item = line.split(',')
