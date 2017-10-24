@@ -2,6 +2,7 @@
 
 import sys
 import os
+import getopt
 from multiprocessing import Process, Queue, Lock
 
 q1 = Queue()
@@ -136,14 +137,31 @@ class Userdata(Config):
         with open(outputfile,'a') as file:
             for line in reslut_queue:
                 file.write(line + '\n')
-
-
+def usage():
+    print('Usage: calculator.py -C cityname -c configfile -d userdata -o resultdat')
+    exit()
 if __name__ == '__main__':
     pros = []
     args = sys.argv[1:]
-    in_configfile = args[args.index('-c') +1]
-    userdata = args[args.index('-d') +1]
-    outfile = args[args.index('-o') +1]
+    try:
+        ar_options,ar_args = getopt.getopt(args,'hC:c:d:o:',['help'])
+        for ar_name,ar_value in ar_options:
+            if ar_name in ('-h','--help'):
+                usage()           
+     #           print('Usage: calculator.py -C cityname -c configfile -d userdata -o resultdat')
+            elif ar_name == '-c':
+               in_configfile = ar_value
+            elif ar_name == '-d':
+               userdata = ar_value
+            elif ar_name == '-o':
+               outfile = ar_value
+    except getopt.GetoptError:
+        print('error:')
+        usage()
+
+#    in_configfile = args[args.index('-c') +1]
+#    userdata = args[args.index('-d') +1]
+#    outfile = args[args.index('-o') +1]
     u = Userdata(userdata,in_configfile)
     pros.append(Process(target=u.get_config))
     pros.append(Process(target=u.calculator))
