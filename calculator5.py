@@ -3,7 +3,9 @@
 import sys
 import os
 import getopt
+import configparser
 from multiprocessing import Process, Queue, Lock
+from datetime import datetime
 
 q1 = Queue()
 q2 = Queue()
@@ -15,7 +17,7 @@ class Config(object):
         self._config = {}
 
    
-    def get_config(self):
+    def get_config(self,cityname='DEFAULT'):
         try:
             if os.path.isfile(self.configfile):
                 pass
@@ -25,13 +27,23 @@ class Config(object):
             print("FileError:not exist")
             sys.exit(0)
        
-        with open(self.configfile,'r') as file:
-            for line in file:
-                key,item = line.strip().split(' = ')
-                try:
-                    self._config[key] = float(item)
-                except ValueError:
-                     print("ValueError")
+        config_city = configparser.ConfigParser()
+        config_city.read(self.configfile)
+        cityname_ret = config_city.items(cityname)
+        for x in cityname_ret:
+            city_key,city_value = x
+            try:
+                self._config[city_key] = float(city_value)
+            except ValueError:
+                print('ValueError')
+
+#        with open(self.configfile,'r') as file:
+ #           for line in file:
+  #              key,item = line.strip().split(' = ')
+   #             try:
+    #                self._config[key] = float(item)
+     #           except ValueError:
+      #               print("ValueError")
 #        return self._config
 #        print(self._config)  #ceshi
         q1.put(self._config)
@@ -66,9 +78,11 @@ class Userdata(Config):
         return self.data
 
     def calculator(self):
+        t = datetime.now()
+        time_pro = datetime.strftime(t,'%Y-%m-%d %H:%M:%S')
        # c = Config(self.configfile)
 #        self.get_config()
-        print('start get queue') #ceshi
+#        print('start get queue') #ceshi
         config_dic = q1.get()  #get config 
         self.get_data()
 #        print('hello') #ceshi
@@ -76,18 +90,18 @@ class Userdata(Config):
        # print('data :',self._config.items())  #ceshi
         insurance_per = 0
         for x,y in config_dic.items():
-            if not x == 'JiShuL' and not x == 'JiShuH':
+            if not x == 'jishul' and not x == 'jishuh':
         #        print(x) #ceshi
                 insurance_per +=y
        # print('insurance_pe is :',insurance_per)  #ceshi
 
         try:
-            print('ceshi') #ceshi   
+#            print('ceshi') #ceshi   
             for employee_id,salary in sorted(self.data.items()):
-                if salary < config_dic['JiShuL'] :
-                    insurance = config_dic['JiShuL'] * insurance_per
-                elif salary > config_dic['JiShuH']:
-                    insurance = config_dic['JiShuH'] * insurance_per
+                if salary < config_dic['jishul'] :
+                    insurance = config_dic['jishul'] * insurance_per
+                elif salary > config_dic['jishuh']:
+                    insurance = config_dic['jishuh'] * insurance_per
                 else:
                     insurance = salary * insurance_per
                 ratal = salary - insurance - 3500
@@ -121,8 +135,9 @@ class Userdata(Config):
                 income = salary - insurance - tax
                                
                 self.result.append(
-                                   "{},{},{:.2f},{:.2f},{:0.2f}".format(
-                                   employee_id,salary,insurance,tax,income)
+                                   "{},{},{:.2f},{:.2f},{:0.2f},{}".format(
+                                   employee_id,salary,insurance,tax,income,
+                                   time_pro)
                                   )
             with lock:
                 q2.put(self.result)
@@ -130,10 +145,10 @@ class Userdata(Config):
         except:
             print("Parameter Error")
 #        queue.put(self.result)
-        print('calculae result end',self.result)  #ceshi
+#        print('calculae result end',self.result)  #ceshi
     def dumptofile(self,outputfile):
         reslut_queue = q2.get()
-        print(reslut_queue) #ceshi
+#        print(reslut_queue) #ceshi
         with open(outputfile,'a') as file:
             for line in reslut_queue:
                 file.write(line + '\n')
@@ -155,6 +170,8 @@ if __name__ == '__main__':
                userdata = ar_value
             elif ar_name == '-o':
                outfile = ar_value
+            elif ar_name == '-C':
+               city_name = ar_value.upper()
     except getopt.GetoptError:
         print('error:')
         usage()
@@ -163,7 +180,7 @@ if __name__ == '__main__':
 #    userdata = args[args.index('-d') +1]
 #    outfile = args[args.index('-o') +1]
     u = Userdata(userdata,in_configfile)
-    pros.append(Process(target=u.get_config))
+    pros.append(Process(target=u.get_config,args=(city_name,)))
     pros.append(Process(target=u.calculator))
     pros.append(Process(target=u.dumptofile,args=(outfile,)))
     for p in pros:
