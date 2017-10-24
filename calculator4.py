@@ -122,8 +122,8 @@ class Userdata(Config):
                                    "{},{},{:.2f},{:.2f},{:0.2f}".format(
                                    employee_id,salary,insurance,tax,income)
                                   )
-                with lock:
-                    queue.put(self.result)
+            with lock:
+                queue.put(self.result)
 #            return self.result 
         except:
             print("Parameter Error")
