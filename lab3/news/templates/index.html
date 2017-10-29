@@ -1,0 +1,7 @@
+{% for file in files%}
+    <p>'start'</p>
+    <p>file.id</p>
+    <dl>
+        <a href='/files/{{file.id}}'>{{file.title}}</a>
+    </dl>
+{% endfor %}
