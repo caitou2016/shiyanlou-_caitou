@@ -35,13 +35,13 @@ class Category(db.Model):
         self.name = name
     def __repr__(self):
         return '<Category(name=%s)>' % self.name
-    
-db.create_all()
-java = Category('Java')
-python = Category('Python')
-file1 = File('Hello Java',datetime.utcnow(),java,'File Conten - java is cool!')
-file2 = File('Hello Python',datetime.utcnow(),python,'File Content-Python is cool!')
+   
 if Category.query.all() and File.query.all() is None:
+    db.create_all()
+    java = Category('Java')
+    python = Category('Python')
+    file1 = File('Hello Java',datetime.utcnow(),java,'File Conten - java is cool!')
+    file2 = File('Hello Python',datetime.utcnow(),python,'File Content-Python is cool!')
     db.session.add(java)
     db.session.add(python)
     db.session.add(file1)
@@ -54,7 +54,7 @@ if Category.query.all() and File.query.all() is None:
 @app.route('/')
 def index():
     
-    file_list = [file1,file2]
+    file_list = File.query.all()
     # file_name = 'helloshiyanlou.json'
     #files = os.listdir(dir_path)
    # for news_file in file_list:
@@ -65,16 +65,11 @@ def index():
 
 @app.route('/files/<file_id>')
 def file(file_id):
-   # file_path = os.path.join(dir_path,filename+'.json')
-    file_list=[file1,file2]
-    files_id=[file1.id,file2.id]
-   # for file_n in file_list:
-    if file1.id == file_id:
-        #with open(file_path,'r') as file_read2:
-         #   file_connect = json.loads(file_read2.read())
-        return render_template('file.html',file_n=file1)
-       # else:
-       #     return render_template('404.html')
+   file_n = File.query.filter_by(id = file_id).first()
+   if not file_n is None:
+       return render_template('file.html',file_n=file_n)
+   else:
+       return render_template('404.html')
 #app.run(port=3000)
 
 @app.errorhandler(404)
