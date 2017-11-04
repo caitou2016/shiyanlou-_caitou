@@ -13,6 +13,9 @@ from shiyanlougithub.items import ShiyanlougithubItem
 class ShiyanlougithubPipeline(object):
     def process_item(self, item, spider):
         item['update_time'] = datetime.strptime(item['update_time'].split('T')[0],'%Y-%m-%d').date()
+        item['commits'] = int(item['commits'])
+        item['branches'] = int(item['branches'])
+        item['releases'] = int(item['releases'])
         self.session.add(Repository(**item))
         return item
     def open_spider(self,spider):

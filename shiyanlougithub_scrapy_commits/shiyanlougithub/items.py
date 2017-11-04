@@ -16,4 +16,4 @@ class ShiyanlougithubItem(scrapy.Item):
     update_time = scrapy.Field()
     commits = scrapy.Field()
     branches = scrapy.Field()
-    releasess = scrapy.Field()
+    releases = scrapy.Field()
