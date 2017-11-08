@@ -3,7 +3,7 @@ import pandas as pd
 def analysis(file,user_id):
     times = 0
     minutes = 0
-    file_path = '/home/shiyanlou/Code/{}.json'.format(file)
+    file_path = '/home/shiyanlou/Code/{}'.format(file)
     try:
         data = pd.read_json(file_path)
     except:
@@ -14,6 +14,6 @@ def analysis(file,user_id):
     return times,minutes
 
 if __name__ == '__main__':
-    file = 'user_study'
+    file = 'user_study.json'
     user_id = 184704
     print(analysis(file,user_id))
